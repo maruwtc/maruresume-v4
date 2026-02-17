@@ -258,14 +258,17 @@ export function TerminalApp({ onOpenApp }: { onOpenApp: (id: AppId) => void }) {
     const trimmed = rawInput.trim();
     if (!trimmed) return;
 
-    pushLine("input", `chris@security-os:${cwd}$ ${trimmed}`);
+    pushLine("input", `${cwd}\n> ${trimmed}`);
 
     const [cmdRaw, ...args] = trimmed.split(/\s+/);
     const cmd = cmdRaw.toLowerCase();
     const activeChallenge = getChallenge();
 
     if (cmd === "help") {
-      pushLine("output", "Available: help, whoami, uname, pwd, ls, cd, cat, grep, strings, submit, ctf, open <app>, skills, experience, contact, date, echo <text>, clear");
+      pushLine(
+        "output",
+        "Available: help, whoami, uname, pwd, ls, cd, cat, grep, strings, submit, ctf, open <app>, skills, experience, contact, date, echo <text>, clear"
+      );
       pushLine("output", "For CTF simulation: ctf list -> ctf start <id> -> find flag -> submit CTF{...}");
       return;
     }
@@ -442,9 +445,9 @@ export function TerminalApp({ onOpenApp }: { onOpenApp: (id: AppId) => void }) {
 
     if (cmd === "open") {
       const target = (args[0] || "").toLowerCase() as AppId;
-      const validTargets: AppId[] = ["about", "experience", "skills", "contact", "projects", "terminal", "handbook"];
+      const validTargets: AppId[] = ["about", "experience", "skills", "contact", "projects", "terminal", "handbook", "settings"];
       if (!validTargets.includes(target)) {
-        pushLine("error", "Usage: open <about|experience|skills|contact|projects|terminal|handbook>");
+        pushLine("error", "Usage: open <about|experience|skills|contact|projects|terminal|handbook|settings>");
         return;
       }
       onOpenApp(target);
@@ -466,24 +469,28 @@ export function TerminalApp({ onOpenApp }: { onOpenApp: (id: AppId) => void }) {
       </div>
       <form
         className="terminal-input-row"
+        style={{ display: "grid", gap: "0.35rem", alignItems: "stretch" }}
         onSubmit={(event) => {
           event.preventDefault();
           runCommand(input);
           setInput("");
         }}
       >
-        <span className="terminal-prompt">{`chris@security-os:${cwd}$`}</span>
-        <input
-          className="terminal-input"
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="none"
-          spellCheck={false}
-          suppressHydrationWarning
-          aria-label="Terminal command input"
-        />
+        <span className="terminal-prompt !text-[0.72rem] !text-slate-600">{cwd}</span>
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="terminal-prompt">{">"}</span>
+          <input
+            className="terminal-input"
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck={false}
+            suppressHydrationWarning
+            aria-label="Terminal command input"
+          />
+        </div>
       </form>
     </div>
   );

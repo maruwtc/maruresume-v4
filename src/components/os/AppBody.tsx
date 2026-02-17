@@ -1,10 +1,20 @@
 import { Github, Linkedin } from "lucide-react";
 import { TerminalApp } from "@/components/os/TerminalApp";
 import { experience, skillTags } from "@/components/os/data";
-import type { AppId } from "@/components/os/types";
+import type { AppId, LiquidGlassMode, ThemeMode } from "@/components/os/types";
 import { hasGitHub, hasLinkedIn, site } from "@/lib/site";
 
-export function renderAppBody(appId: AppId, onOpenApp: (id: AppId) => void) {
+export function renderAppBody(
+  appId: AppId,
+  onOpenApp: (id: AppId) => void,
+  options?: {
+    liquidGlassMode?: LiquidGlassMode;
+    onSetLiquidGlassMode?: (mode: LiquidGlassMode) => void;
+    themeMode?: ThemeMode;
+    resolvedThemeMode?: "light" | "dark";
+    onSetThemeMode?: (mode: ThemeMode) => void;
+  }
+) {
   if (appId === "about") {
     return (
       <div className="stack">
@@ -99,6 +109,93 @@ export function renderAppBody(appId: AppId, onOpenApp: (id: AppId) => void) {
         <p>Look for debug endpoints, verbose errors, default credentials, weak CORS, open buckets, leaked env files.</p>
         <h4>5. Evidence & Reporting</h4>
         <p>Capture reproducible PoC steps, impact, affected scope, and mitigation with priority and owner.</p>
+      </div>
+    );
+  }
+
+  if (appId === "settings") {
+    const liquidGlassMode = options?.liquidGlassMode ?? "tinted";
+    const themeMode = options?.themeMode ?? "system";
+    const resolvedTheme = options?.themeMode === "system" ? (options?.resolvedThemeMode ?? "light") : themeMode;
+
+    return (
+      <div className="stack">
+        <h3 style={{ margin: 0 }}>UI Appearance</h3>
+        <p className="muted">Theme controls dark mode and wallpaper. System follows your device setting.</p>
+        <div className="cta-row">
+          <button
+            type="button"
+            className="os-link-btn"
+            aria-pressed={themeMode === "system"}
+            onClick={() => options?.onSetThemeMode?.("system")}
+            style={
+              themeMode === "system"
+                ? { borderColor: "rgba(30, 64, 175, 0.52)", background: "rgba(191, 219, 254, 0.36)" }
+                : undefined
+            }
+          >
+            System
+          </button>
+          <button
+            type="button"
+            className="os-link-btn"
+            aria-pressed={themeMode === "light"}
+            onClick={() => options?.onSetThemeMode?.("light")}
+            style={
+              themeMode === "light"
+                ? { borderColor: "rgba(30, 64, 175, 0.52)", background: "rgba(191, 219, 254, 0.36)" }
+                : undefined
+            }
+          >
+            Light Theme
+          </button>
+          <button
+            type="button"
+            className="os-link-btn"
+            aria-pressed={themeMode === "dark"}
+            onClick={() => options?.onSetThemeMode?.("dark")}
+            style={
+              themeMode === "dark"
+                ? { borderColor: "rgba(30, 64, 175, 0.52)", background: "rgba(191, 219, 254, 0.36)" }
+                : undefined
+            }
+          >
+            Dark Theme
+          </button>
+        </div>
+        <p className="muted">Liquid glass controls how transparent phone/tablet glass surfaces look.</p>
+        <div className="cta-row">
+          <button
+            type="button"
+            className="os-link-btn"
+            aria-pressed={liquidGlassMode === "clear"}
+            onClick={() => options?.onSetLiquidGlassMode?.("clear")}
+            style={
+              liquidGlassMode === "clear"
+                ? { borderColor: "rgba(30, 64, 175, 0.52)", background: "rgba(191, 219, 254, 0.36)" }
+                : undefined
+            }
+          >
+            Clear Glass
+          </button>
+          <button
+            type="button"
+            className="os-link-btn"
+            aria-pressed={liquidGlassMode === "tinted"}
+            onClick={() => options?.onSetLiquidGlassMode?.("tinted")}
+            style={
+              liquidGlassMode === "tinted"
+                ? { borderColor: "rgba(30, 64, 175, 0.52)", background: "rgba(191, 219, 254, 0.36)" }
+                : undefined
+            }
+          >
+            Tinted Glass
+          </button>
+        </div>
+        <p className="muted">
+          Theme: {themeMode === "system" ? `System (${resolvedTheme === "dark" ? "Dark" : "Light"})` : themeMode === "light" ? "Light" : "Dark"}
+        </p>
+        <p className="muted">Current mode: {liquidGlassMode === "clear" ? "Clear" : "Tinted"}</p>
       </div>
     );
   }

@@ -14,7 +14,7 @@ import {
   MIN_WINDOW_HEIGHT,
   MIN_WINDOW_WIDTH,
 } from "@/components/os/data";
-import type { AppId, InteractionState, ResizeDirection, ViewMode, WindowState } from "@/components/os/types";
+import type { AppId, InteractionState, LiquidGlassMode, ResizeDirection, ThemeMode, ViewMode, WindowState } from "@/components/os/types";
 
 export default function Home() {
   const workspaceRef = useRef<HTMLElement>(null);
@@ -28,6 +28,7 @@ export default function Home() {
     projects: null,
     terminal: null,
     handbook: null,
+    settings: null,
   });
 
   const [openWindows, setOpenWindows] = useState<AppId[]>(INITIAL_OPEN);
@@ -47,6 +48,9 @@ export default function Home() {
   } | null>(null);
   const [dragging, setDragging] = useState(false);
   const [now, setNow] = useState<Date | null>(null);
+  const [liquidGlassMode, setLiquidGlassMode] = useState<LiquidGlassMode>("tinted");
+  const [themeMode, setThemeMode] = useState<ThemeMode>("system");
+  const [systemThemeMode, setSystemThemeMode] = useState<"light" | "dark">("light");
 
   useEffect(() => {
     windowStateRef.current = windowState;
@@ -85,6 +89,51 @@ export default function Home() {
   const isDesktop = viewMode === "desktop";
   const isPhone = viewMode === "phone";
   const isTablet = viewMode === "tablet";
+  const resolvedThemeMode = themeMode === "system" ? systemThemeMode : themeMode;
+  const wallpaperUrl = resolvedThemeMode === "dark" ? "/wallpapers/liquid-dark.svg" : "/wallpapers/liquid-light.svg";
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const updateSystemTheme = () => setSystemThemeMode(mediaQuery.matches ? "dark" : "light");
+    updateSystemTheme();
+    mediaQuery.addEventListener("change", updateSystemTheme);
+    return () => mediaQuery.removeEventListener("change", updateSystemTheme);
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle("theme-dark", resolvedThemeMode === "dark");
+    return () => {
+      document.body.classList.remove("theme-dark");
+    };
+  }, [resolvedThemeMode]);
+
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const lockViewport = viewMode === "phone" || viewMode === "tablet";
+
+    const previousHtmlOverflow = html.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+    const previousBodyPosition = body.style.position;
+    const previousBodyWidth = body.style.width;
+    const previousBodyHeight = body.style.height;
+
+    if (lockViewport) {
+      html.style.overflow = "hidden";
+      body.style.overflow = "hidden";
+      body.style.position = "fixed";
+      body.style.width = "100%";
+      body.style.height = "100dvh";
+    }
+
+    return () => {
+      html.style.overflow = previousHtmlOverflow;
+      body.style.overflow = previousBodyOverflow;
+      body.style.position = previousBodyPosition;
+      body.style.width = previousBodyWidth;
+      body.style.height = previousBodyHeight;
+    };
+  }, [viewMode]);
 
   const clockText = useMemo(() => {
     if (!now) return "--:--:--";
@@ -471,6 +520,12 @@ export default function Home() {
         onGoHome={() => setPhoneActiveApp(null)}
         dateText={dateText}
         clockText={clockText}
+        liquidGlassMode={liquidGlassMode}
+        onSetLiquidGlassMode={setLiquidGlassMode}
+        themeMode={themeMode}
+        resolvedThemeMode={resolvedThemeMode}
+        onSetThemeMode={setThemeMode}
+        wallpaperUrl={wallpaperUrl}
       />
     );
   }
@@ -483,6 +538,12 @@ export default function Home() {
         onGoHome={() => setTabletActiveApp(null)}
         dateText={dateText}
         clockText={clockText}
+        liquidGlassMode={liquidGlassMode}
+        onSetLiquidGlassMode={setLiquidGlassMode}
+        themeMode={themeMode}
+        resolvedThemeMode={resolvedThemeMode}
+        onSetThemeMode={setThemeMode}
+        wallpaperUrl={wallpaperUrl}
       />
     );
   }
@@ -492,7 +553,7 @@ export default function Home() {
       className={`os-shell mode-${viewMode} ${dragging ? "dragging" : ""}`}
       onPointerDown={startDesktopSelection}
     >
-      <div className="os-wallpaper" aria-hidden="true" />
+      <div className="os-wallpaper" style={{ backgroundImage: `url(${wallpaperUrl})` }} aria-hidden="true" />
 
       <section className="os-desktop-icons" aria-label="Desktop icons">
         {apps.map((app) => {
@@ -592,6 +653,11 @@ export default function Home() {
               onDragStart={startDrag}
               onResizeStart={startResize}
               onOpenApp={openApp}
+              liquidGlassMode={liquidGlassMode}
+              onSetLiquidGlassMode={setLiquidGlassMode}
+              themeMode={themeMode}
+              resolvedThemeMode={resolvedThemeMode}
+              onSetThemeMode={setThemeMode}
             />
           );
         })}

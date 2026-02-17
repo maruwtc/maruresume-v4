@@ -1,7 +1,9 @@
 import type React from "react";
 
-export type AppId = "about" | "experience" | "skills" | "contact" | "projects" | "terminal" | "handbook";
+export type AppId = "about" | "experience" | "skills" | "contact" | "projects" | "terminal" | "handbook" | "settings";
 export type ViewMode = "desktop" | "tablet" | "phone";
+export type LiquidGlassMode = "clear" | "tinted";
+export type ThemeMode = "light" | "dark" | "system";
 
 export type AppConfig = {
   id: AppId;

@@ -1,7 +1,7 @@
 import type React from "react";
 import { Minus, PictureInPicture2, Square, X } from "lucide-react";
 import { renderAppBody } from "@/components/os/AppBody";
-import type { AppConfig, AppId, ResizeDirection, WindowState } from "@/components/os/types";
+import type { AppConfig, AppId, LiquidGlassMode, ResizeDirection, ThemeMode, WindowState } from "@/components/os/types";
 
 export function DesktopWindow({
   app,
@@ -17,6 +17,11 @@ export function DesktopWindow({
   onDragStart,
   onResizeStart,
   onOpenApp,
+  liquidGlassMode,
+  onSetLiquidGlassMode,
+  themeMode,
+  resolvedThemeMode,
+  onSetThemeMode,
 }: {
   app: AppConfig;
   state: WindowState;
@@ -31,6 +36,11 @@ export function DesktopWindow({
   onDragStart: (id: AppId, event: React.PointerEvent<HTMLElement>) => void;
   onResizeStart: (id: AppId, direction: ResizeDirection, event: React.PointerEvent<HTMLElement>) => void;
   onOpenApp: (id: AppId) => void;
+  liquidGlassMode: LiquidGlassMode;
+  onSetLiquidGlassMode: (mode: LiquidGlassMode) => void;
+  themeMode: ThemeMode;
+  resolvedThemeMode: "light" | "dark";
+  onSetThemeMode: (mode: ThemeMode) => void;
 }) {
   const Icon = app.icon;
 
@@ -71,7 +81,15 @@ export function DesktopWindow({
           </button>
         </div>
       </header>
-      <div className="os-window-body">{renderAppBody(app.id, onOpenApp)}</div>
+      <div className="os-window-body">
+        {renderAppBody(app.id, onOpenApp, {
+          liquidGlassMode,
+          onSetLiquidGlassMode,
+          themeMode,
+          resolvedThemeMode,
+          onSetThemeMode,
+        })}
+      </div>
       {canResize && !state.maximized && (
         <>
           <button type="button" className="os-resize-handle top" onPointerDown={(event) => onResizeStart(app.id, "top", event)} aria-label={`Resize ${app.title} top`} />

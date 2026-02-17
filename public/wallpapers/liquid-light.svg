@@ -1,0 +1,26 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="210" y1="40" x2="1330" y2="920" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DDE7FF"/>
+      <stop offset="0.48" stop-color="#C7D8FF"/>
+      <stop offset="1" stop-color="#BFD2F5"/>
+    </linearGradient>
+    <radialGradient id="orbA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(280 180) rotate(15) scale(430 320)">
+      <stop stop-color="#FFFFFF" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="orbB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1220 760) rotate(-5) scale(520 380)">
+      <stop stop-color="#F8FBFF" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#F8FBFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <ellipse cx="280" cy="180" rx="430" ry="320" fill="url(#orbA)"/>
+  <ellipse cx="1220" cy="760" rx="520" ry="380" fill="url(#orbB)"/>
+  <g opacity="0.34">
+    <path d="M120 700C310 620 480 760 690 700C870 648 1040 500 1260 560C1380 592 1470 670 1540 760V1040H120V700Z" fill="#EFF5FF"/>
+  </g>
+  <g opacity="0.24">
+    <path d="M-40 400C180 310 390 450 590 420C770 394 940 230 1160 270C1320 300 1460 430 1640 420V1040H-40V400Z" fill="#FFFFFF"/>
+  </g>
+</svg>

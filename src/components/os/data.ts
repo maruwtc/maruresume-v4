@@ -1,55 +1,62 @@
-import { BookText, Briefcase, FolderKanban, Mail, Shield, Terminal, User } from "lucide-react";
+import { BookText, Briefcase, FolderKanban, Mail, Settings2, Shield, Terminal, User } from "lucide-react";
 import type { AppConfig, AppId, ExperienceItem, WindowState } from "@/components/os/types";
 
 export const apps: AppConfig[] = [
   {
     id: "about",
-    title: "About.me",
+    title: "About",
     icon: User,
     position: { top: 72, left: 72 },
     size: { width: 640, height: 470 },
   },
   {
     id: "experience",
-    title: "Experience.log",
+    title: "Experience",
     icon: Briefcase,
     position: { top: 120, left: 420 },
     size: { width: 700, height: 520 },
   },
   {
     id: "skills",
-    title: "Skills.matrix",
+    title: "Skills",
     icon: Shield,
     position: { top: 210, left: 120 },
     size: { width: 620, height: 430 },
   },
   {
     id: "contact",
-    title: "Contact.link",
+    title: "Contact",
     icon: Mail,
     position: { top: 180, left: 710 },
     size: { width: 540, height: 390 },
   },
   {
     id: "projects",
-    title: "Projects.dir",
+    title: "Projects",
     icon: FolderKanban,
     position: { top: 72, left: 740 },
     size: { width: 520, height: 390 },
   },
   {
     id: "handbook",
-    title: "Attack-Handbook",
+    title: "Attack Handbook",
     icon: BookText,
     position: { top: 440, left: 80 },
     size: { width: 580, height: 390 },
   },
   {
     id: "terminal",
-    title: "Security-Terminal",
+    title: "Terminal",
     icon: Terminal,
     position: { top: 100, left: 220 },
     size: { width: 760, height: 530 },
+  },
+  {
+    id: "settings",
+    title: "Settings",
+    icon: Settings2,
+    position: { top: 150, left: 320 },
+    size: { width: 480, height: 360 },
   },
 ];
 
