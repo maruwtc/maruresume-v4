@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 
 :root {
-  --font-ui: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", "SFMono-Regular", "Menlo", monospace;
   --background: #f4f8ff;
   --foreground: #0f172a;
@@ -173,10 +173,14 @@ body.theme-dark .os-icon-badge {
 .os-window {
   position: absolute;
   border-radius: 14px;
-  border: 1px solid var(--window-border);
-  background: var(--window-bg);
-  backdrop-filter: blur(11px);
-  box-shadow: 0 22px 48px rgba(2, 8, 23, 0.22);
+  /* Desktop glass: real vibrancy */
+  background: rgba(242, 242, 247, 0.68);
+  backdrop-filter: blur(28px) saturate(180%) brightness(103%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(103%);
+  border: 0.5px solid rgba(255, 255, 255, 0.78);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.88),
+    0 22px 48px rgba(2, 8, 23, 0.18);
   overflow: hidden;
   display: grid;
   grid-template-rows: auto 1fr;
@@ -185,10 +189,27 @@ body.theme-dark .os-icon-badge {
   transition: box-shadow 150ms ease, border-color 150ms ease, transform 120ms ease;
 }
 
+body.theme-dark .os-window {
+  background: rgba(28, 28, 30, 0.68);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.1),
+    0 22px 48px rgba(0, 0, 0, 0.4);
+}
+
 .os-window.active {
-  border-color: var(--window-active);
-  box-shadow: 0 28px 56px rgba(2, 8, 23, 0.28);
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.95),
+    0 28px 56px rgba(2, 8, 23, 0.22);
   transform: translateY(-1px);
+}
+
+body.theme-dark .os-window.active {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.18),
+    0 28px 56px rgba(0, 0, 0, 0.48);
 }
 
 .os-window.maximized {
@@ -198,19 +219,84 @@ body.theme-dark .os-icon-badge {
 .os-window-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.35rem 0.45rem;
-  border-bottom: 1px solid rgba(30, 41, 59, 0.14);
-  background: rgba(30, 64, 175, 0.1);
+  gap: 0.5rem;
+  padding: 0.45rem 0.75rem;
+  /* Scroll-under effect: blurs window content behind title bar */
+  background: rgba(242, 242, 247, 0.55);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 0.5px solid rgba(60, 60, 67, 0.1);
+  box-shadow: inset 0 -0.5px 0 rgba(60, 60, 67, 0.08);
   user-select: none;
   -webkit-user-select: none;
+}
+
+body.theme-dark .os-window-head {
+  background: rgba(28, 28, 30, 0.55);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 -0.5px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* macOS-style traffic lights */
+.os-trafficlights {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+
+.os-tl {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 0.5px solid rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: filter 100ms;
+  flex-shrink: 0;
+}
+
+.os-tl svg {
+  opacity: 0;
+  transition: opacity 100ms;
+}
+
+.os-trafficlights:hover .os-tl svg {
+  opacity: 1;
+}
+
+.os-tl:hover {
+  filter: brightness(0.88);
+}
+
+.os-tl-close { background: #FF5F57; }
+.os-tl-min   { background: #FFBD2E; }
+.os-tl-max   { background: #28CA42; }
+
+.os-window:not(.active) .os-tl-close,
+.os-window:not(.active) .os-tl-min,
+.os-window:not(.active) .os-tl-max {
+  background: #c8c8c8;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.theme-dark .os-window:not(.active) .os-tl-close,
+body.theme-dark .os-window:not(.active) .os-tl-min,
+body.theme-dark .os-window:not(.active) .os-tl-max {
+  background: #4a4a4a;
 }
 
 .os-window-drag {
   flex: 1;
   min-width: 0;
-  border-radius: 8px;
-  padding: 0.2rem 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  padding: 0.15rem 0.25rem;
 }
 
 .os-window-drag.desktop {
@@ -225,63 +311,15 @@ body.theme-dark .os-icon-badge {
 .os-window-title {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #0f172a;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #374151;
+  letter-spacing: -0.01em;
 }
 
 body.theme-dark .os-window-title {
-  color: #e2e8f0;
-}
-
-.os-window-actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.os-action {
-  width: 1.55rem;
-  height: 1.55rem;
-  border: 1px solid rgba(12, 34, 63, 0.2);
-  background: rgba(255, 255, 255, 0.48);
-  color: #0c223f;
-  border-radius: 7px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.os-action:hover {
-  background: rgba(255, 255, 255, 0.72);
-}
-
-body.theme-dark .os-action {
-  border-color: rgba(148, 163, 184, 0.38);
-  background: rgba(15, 23, 42, 0.58);
-  color: #e2e8f0;
-}
-
-body.theme-dark .os-action:hover {
-  background: rgba(30, 41, 59, 0.8);
-}
-
-.os-min {
-  border-color: rgba(59, 130, 246, 0.25);
-}
-
-.os-max {
-  border-color: rgba(59, 130, 246, 0.35);
-}
-
-.os-close {
-  border-color: rgba(239, 68, 68, 0.28);
-  color: #7f1d1d;
-}
-
-.os-close:hover {
-  background: rgba(239, 68, 68, 0.24);
+  color: #cbd5e1;
 }
 
 .os-window-body {
@@ -373,89 +411,385 @@ body.theme-dark .os-action:hover {
 
 .stack {
   display: grid;
-  gap: 0.8rem;
+  gap: 0.9rem;
 }
 
+/* MD3 List (Experience) */
 .timeline {
   display: grid;
-  gap: 0.85rem;
+  gap: 0.6rem;
 }
 
 .timeline-item {
-  border: 1px solid rgba(15, 23, 42, 0.13);
-  border-radius: 11px;
-  padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.52);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 12px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  transition: box-shadow 150ms ease;
+}
+
+.timeline-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 body.theme-dark .timeline-item {
-  border-color: rgba(148, 163, 184, 0.28);
-  background: rgba(15, 23, 42, 0.5);
+  border-color: rgba(148, 163, 184, 0.16);
+  background: rgba(30, 41, 59, 0.55);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.timeline-item-inner {
+  display: flex;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  align-items: flex-start;
+}
+
+.timeline-lead {
+  flex-shrink: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: rgba(30, 58, 138, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1e3a8a;
+  margin-top: 0.1rem;
+}
+
+body.theme-dark .timeline-lead {
+  background: rgba(125, 211, 252, 0.12);
+  color: #7dd3fc;
 }
 
 .timeline-item h3 {
   margin: 0;
-  font-size: 0.94rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+body.theme-dark .timeline-item h3 {
+  color: #f1f5f9;
 }
 
 .timeline-item p {
-  margin: 0.3rem 0 0;
+  margin: 0.25rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
 }
 
 .muted {
   color: var(--muted-foreground);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
 }
 
+/* MD3 Chips */
 .chip-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.45rem;
 }
 
 .chip {
-  padding: 0.35rem 0.58rem;
+  padding: 0.3rem 0.7rem;
   border: 1px solid var(--chip-border);
-  border-radius: 999px;
+  border-radius: 8px;
   background: var(--chip);
-  font-size: 0.76rem;
-  font-weight: 600;
-  color: #1d2b5b;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #1e3a8a;
+  letter-spacing: 0.01em;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.chip:hover {
+  background: rgba(30, 58, 138, 0.2);
 }
 
 body.theme-dark .chip {
-  color: #bae6fd;
+  color: #93c5fd;
 }
 
+body.theme-dark .chip:hover {
+  background: rgba(125, 211, 252, 0.18);
+}
+
+/* CTA / button row */
 .cta-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
+  gap: 0.55rem;
 }
 
+/* MD3 Filled button */
+.md3-btn-filled {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+  border: none;
+  border-radius: 20px;
+  background: #1e3a8a;
+  color: #fff;
+  padding: 0.55rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease, box-shadow 150ms ease;
+  box-shadow: 0 1px 3px rgba(30, 58, 138, 0.3);
+}
+
+.md3-btn-filled:hover {
+  background: #1d4ed8;
+  box-shadow: 0 3px 8px rgba(30, 58, 138, 0.35);
+}
+
+body.theme-dark .md3-btn-filled {
+  background: #3b82f6;
+  box-shadow: 0 1px 3px rgba(59, 130, 246, 0.3);
+}
+
+body.theme-dark .md3-btn-filled:hover {
+  background: #60a5fa;
+}
+
+/* MD3 Tonal button */
+.md3-btn-tonal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+  border: 1px solid rgba(30, 58, 138, 0.2);
+  border-radius: 20px;
+  background: rgba(30, 58, 138, 0.08);
+  color: #1e3a8a;
+  padding: 0.55rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.md3-btn-tonal:hover {
+  background: rgba(30, 58, 138, 0.14);
+}
+
+body.theme-dark .md3-btn-tonal {
+  border-color: rgba(125, 211, 252, 0.25);
+  background: rgba(125, 211, 252, 0.1);
+  color: #7dd3fc;
+}
+
+body.theme-dark .md3-btn-tonal:hover {
+  background: rgba(125, 211, 252, 0.18);
+}
+
+/* Legacy link button (kept for compat) */
 .os-link-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
   text-decoration: none;
-  border: 1px solid rgba(12, 34, 63, 0.22);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(12, 34, 63, 0.2);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.6);
   color: #0c223f;
-  padding: 0.45rem 0.68rem;
+  padding: 0.45rem 0.8rem;
   font-size: 0.82rem;
-  font-weight: 650;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease;
 }
 
 body.theme-dark .os-link-btn {
-  border-color: rgba(148, 163, 184, 0.35);
-  background: rgba(15, 23, 42, 0.55);
+  border-color: rgba(148, 163, 184, 0.32);
+  background: rgba(15, 23, 42, 0.52);
   color: #e2e8f0;
 }
 
 .os-link-btn:hover {
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.85);
 }
+
+body.theme-dark .os-link-btn:hover {
+  background: rgba(30, 41, 59, 0.75);
+}
+
+/* MD3 Segmented button group */
+.md3-seg-group {
+  display: flex;
+  border: 1px solid rgba(30, 58, 138, 0.2);
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+body.theme-dark .md3-seg-group {
+  border-color: rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 42, 0.3);
+}
+
+.md3-seg-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #374151;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+  white-space: nowrap;
+}
+
+.md3-seg-btn + .md3-seg-btn {
+  border-left: 1px solid rgba(30, 58, 138, 0.15);
+}
+
+body.theme-dark .md3-seg-btn + .md3-seg-btn {
+  border-left-color: rgba(148, 163, 184, 0.2);
+}
+
+.md3-seg-btn.active {
+  background: #1e3a8a;
+  color: #fff;
+}
+
+body.theme-dark .md3-seg-btn {
+  color: #94a3b8;
+}
+
+body.theme-dark .md3-seg-btn.active {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.md3-section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted-foreground);
+  margin: 0 0 0.45rem;
+}
+
+/* ============================================================
+   iOS Glass System
+   Real vibrancy: blur + saturate(180%) + brightness + specular
+   Used for phone/tablet shells.
+   Light/dark handled automatically via body.theme-dark.
+   ============================================================ */
+
+/* --- Tinted glass (standard card / sheet) --- */
+.ios-glass {
+  backdrop-filter: blur(32px) saturate(180%) brightness(103%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%) brightness(103%);
+  background: rgba(242, 242, 247, 0.72);
+  border: 0.5px solid rgba(255, 255, 255, 0.82);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.9),
+    0 8px 32px rgba(0, 0, 0, 0.1);
+}
+body.theme-dark .ios-glass {
+  background: rgba(28, 28, 30, 0.72);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.12),
+    0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* --- Clear glass (ultra-thin material) --- */
+.ios-glass-clear {
+  backdrop-filter: blur(44px) saturate(200%) brightness(108%);
+  -webkit-backdrop-filter: blur(44px) saturate(200%) brightness(108%);
+  background: rgba(255, 255, 255, 0.2);
+  border: 0.5px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.75),
+    0 8px 24px rgba(0, 0, 0, 0.06);
+}
+body.theme-dark .ios-glass-clear {
+  background: rgba(0, 0, 0, 0.16);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* --- App header bar (inside a glass card, blurs scrolling content beneath) --- */
+.ios-glass-bar {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background: rgba(242, 242, 247, 0.52);
+  border-bottom: 0.5px solid rgba(60, 60, 67, 0.1);
+  box-shadow: inset 0 -0.5px 0 rgba(60, 60, 67, 0.06);
+}
+body.theme-dark .ios-glass-bar {
+  background: rgba(28, 28, 30, 0.52);
+  border-bottom-color: rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 -0.5px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* --- App header bar — clear glass variant --- */
+.ios-glass-bar-clear {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background: rgba(255, 255, 255, 0.14);
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 -0.5px 0 rgba(255, 255, 255, 0.18);
+}
+body.theme-dark .ios-glass-bar-clear {
+  background: rgba(0, 0, 0, 0.1);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 -0.5px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* --- Dock / floating nav bar --- */
+.ios-glass-dock {
+  backdrop-filter: blur(38px) saturate(180%) brightness(105%);
+  -webkit-backdrop-filter: blur(38px) saturate(180%) brightness(105%);
+  background: rgba(242, 242, 247, 0.62);
+  border: 0.5px solid rgba(255, 255, 255, 0.88);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.96),
+    inset 0 -0.5px 0 rgba(255, 255, 255, 0.45),
+    0 18px 44px rgba(0, 0, 0, 0.14);
+}
+body.theme-dark .ios-glass-dock {
+  background: rgba(28, 28, 30, 0.65);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -0.5px 0 rgba(255, 255, 255, 0.06),
+    0 18px 44px rgba(0, 0, 0, 0.42);
+}
+
+/* --- Dock — clear glass variant --- */
+.ios-glass-dock-clear {
+  backdrop-filter: blur(50px) saturate(200%) brightness(110%);
+  -webkit-backdrop-filter: blur(50px) saturate(200%) brightness(110%);
+  background: rgba(255, 255, 255, 0.18);
+  border: 0.5px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -0.5px 0 rgba(255, 255, 255, 0.35),
+    0 18px 44px rgba(0, 0, 0, 0.08);
+}
+body.theme-dark .ios-glass-dock-clear {
+  background: rgba(0, 0, 0, 0.12);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -0.5px 0 rgba(255, 255, 255, 0.05),
+    0 18px 44px rgba(0, 0, 0, 0.32);
+}
+
+/* ============================================================ */
 
 .terminal-text {
   margin: 0;
@@ -593,17 +927,23 @@ body.theme-dark .terminal-prompt {
 }
 
 .os-widget {
-  border: 1px solid rgba(22, 45, 84, 0.2);
-  background: rgba(248, 251, 255, 0.88);
-  border-radius: 12px;
-  padding: 0.72rem;
-  box-shadow: 0 14px 30px rgba(2, 8, 23, 0.14);
-  backdrop-filter: blur(10px);
+  background: rgba(242, 242, 247, 0.72);
+  backdrop-filter: blur(28px) saturate(180%) brightness(103%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(103%);
+  border: 0.5px solid rgba(255, 255, 255, 0.78);
+  border-radius: 16px;
+  padding: 0.75rem;
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.9),
+    0 12px 32px rgba(2, 8, 23, 0.1);
 }
 
 body.theme-dark .os-widget {
-  border-color: rgba(148, 163, 184, 0.3);
-  background: rgba(15, 23, 42, 0.74);
+  background: rgba(28, 28, 30, 0.72);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.1),
+    0 12px 32px rgba(0, 0, 0, 0.35);
 }
 
 .os-widget h2 {
@@ -727,13 +1067,24 @@ body.theme-dark .os-widget p {
   left: 0.9rem;
   top: 3.6rem;
   width: min(300px, calc(100vw - 1.8rem));
-  background: rgba(248, 251, 255, 0.94);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(12, 34, 63, 0.26);
-  border-radius: 14px;
-  box-shadow: 0 20px 40px rgba(2, 8, 23, 0.26);
+  background: rgba(242, 242, 247, 0.78);
+  backdrop-filter: blur(36px) saturate(180%) brightness(103%);
+  -webkit-backdrop-filter: blur(36px) saturate(180%) brightness(103%);
+  border: 0.5px solid rgba(255, 255, 255, 0.82);
+  border-radius: 16px;
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.92),
+    0 20px 44px rgba(0, 0, 0, 0.18);
   padding: 0.7rem;
   z-index: 99;
+}
+
+body.theme-dark .os-start-menu {
+  background: rgba(28, 28, 30, 0.78);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.12),
+    0 20px 44px rgba(0, 0, 0, 0.45);
 }
 
 .os-start-menu h2 {
@@ -770,16 +1121,29 @@ body.theme-dark .os-widget p {
   right: 0.75rem;
   top: 0.7rem;
   height: 2.7rem;
-  border-radius: 13px;
-  border: 1px solid var(--taskbar-border);
-  background: var(--taskbar);
+  border-radius: 16px;
+  /* Dark pill — like macOS menu bar / iOS toolbar */
+  background: rgba(10, 12, 22, 0.72);
+  backdrop-filter: blur(32px) saturate(180%) brightness(96%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%) brightness(96%);
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.14),
+    0 8px 24px rgba(0, 0, 0, 0.3);
   color: #eff6ff;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 0.6rem;
   padding: 0.35rem 0.45rem;
-  backdrop-filter: blur(12px);
+}
+
+body.theme-dark .os-taskbar {
+  background: rgba(8, 8, 10, 0.78);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
 .start-btn,
@@ -826,9 +1190,8 @@ body.theme-dark .os-widget p {
 @keyframes raise {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.98);
+    transform: translateY(8px) scale(0.97);
   }
-
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -839,10 +1202,32 @@ body.theme-dark .os-widget p {
   from {
     transform: translateX(0) rotate(-2deg);
   }
-
   to {
     transform: translateX(-42px) rotate(-2deg);
   }
+}
+
+/* iOS slide-up animation for app open */
+@keyframes phone-app-in {
+  from {
+    opacity: 0;
+    transform: translateY(32px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.phone-app-in {
+  animation: phone-app-in 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* iOS icon press bounce */
+@keyframes icon-tap {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.88); }
+  100% { transform: scale(1); }
 }
 
 @media (max-width: 1180px) {

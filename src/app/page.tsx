@@ -512,6 +512,27 @@ export default function Home() {
     return () => window.removeEventListener("pointerdown", onPointerDown);
   }, [startOpen]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (isPhone && phoneActiveApp) {
+        setPhoneActiveApp(null);
+      } else if (isTablet && tabletActiveApp) {
+        setTabletActiveApp(null);
+      } else if (isDesktop) {
+        if (startOpen) {
+          setStartOpen(false);
+        } else if (activeApp) {
+          setOpenWindows((prev) => prev.filter((entry) => entry !== activeApp));
+          setOrder((prev) => prev.filter((entry) => entry !== activeApp));
+        }
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isPhone, isTablet, isDesktop, phoneActiveApp, tabletActiveApp, activeApp, startOpen]);
+
   if (isPhone) {
     return (
       <PhoneShell

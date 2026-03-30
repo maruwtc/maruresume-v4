@@ -1,5 +1,5 @@
 import type React from "react";
-import { Minus, PictureInPicture2, Square, X } from "lucide-react";
+import { Maximize2, Minus, X } from "lucide-react";
 import { renderAppBody } from "@/components/os/AppBody";
 import type { AppConfig, AppId, LiquidGlassMode, ResizeDirection, ThemeMode, WindowState } from "@/components/os/types";
 
@@ -58,29 +58,47 @@ export function DesktopWindow({
       aria-label={app.title}
     >
       <header className="os-window-head" onMouseDown={onFocus}>
-        <div className={`os-window-drag ${canDrag ? "desktop" : ""}`} onPointerDown={(event) => onDragStart(app.id, event)}>
-          <div className="os-window-title">
-            <Icon className="h-4 w-4" />
-            <span>{app.title}</span>
-          </div>
-        </div>
-        <div className="os-window-actions">
-          <button type="button" className="os-action os-min" onClick={onMinimize} aria-label={`Minimize ${app.title}`}>
-            <Minus className="h-4 w-4" />
+        {/* macOS-style traffic lights */}
+        <div className="os-trafficlights">
+          <button
+            type="button"
+            className="os-tl os-tl-close"
+            onClick={onClose}
+            aria-label={`Close ${app.title}`}
+          >
+            <X style={{ width: 7, height: 7 }} />
           </button>
           <button
             type="button"
-            className="os-action os-max"
+            className="os-tl os-tl-min"
+            onClick={onMinimize}
+            aria-label={`Minimize ${app.title}`}
+          >
+            <Minus style={{ width: 7, height: 7 }} />
+          </button>
+          <button
+            type="button"
+            className="os-tl os-tl-max"
             onClick={onMaximize}
             aria-label={`${state.maximized ? "Restore" : "Maximize"} ${app.title}`}
           >
-            {state.maximized ? <PictureInPicture2 className="h-4 w-4" /> : <Square className="h-4 w-4" />}
-          </button>
-          <button type="button" className="os-action os-close" onClick={onClose} aria-label={`Close ${app.title}`}>
-            <X className="h-4 w-4" />
+            <Maximize2 style={{ width: 6, height: 6 }} />
           </button>
         </div>
+
+        {/* Drag area with centered title */}
+        <div
+          className={`os-window-drag ${canDrag ? "desktop" : ""}`}
+          onPointerDown={(event) => onDragStart(app.id, event)}
+          onDoubleClick={onMaximize}
+        >
+          <div className="os-window-title">
+            <Icon className="h-3.5 w-3.5 opacity-70" />
+            <span>{app.title}</span>
+          </div>
+        </div>
       </header>
+
       <div className="os-window-body">
         {renderAppBody(app.id, onOpenApp, {
           liquidGlassMode,
@@ -90,6 +108,7 @@ export function DesktopWindow({
           onSetThemeMode,
         })}
       </div>
+
       {canResize && !state.maximized && (
         <>
           <button type="button" className="os-resize-handle top" onPointerDown={(event) => onResizeStart(app.id, "top", event)} aria-label={`Resize ${app.title} top`} />

@@ -1,5 +1,6 @@
-import { Github, Linkedin } from "lucide-react";
+import { Briefcase, Github, Linkedin } from "lucide-react";
 import { TerminalApp } from "@/components/os/TerminalApp";
+import { ProjectsApp } from "@/components/os/ProjectsApp";
 import { experience, skillTags } from "@/components/os/data";
 import type { AppId, LiquidGlassMode, ThemeMode } from "@/components/os/types";
 import { hasGitHub, hasLinkedIn, site } from "@/lib/site";
@@ -18,21 +19,24 @@ export function renderAppBody(
   if (appId === "about") {
     return (
       <div className="stack">
-        <p>
-          I am an IT professional with 4+ years of hands-on experience across information security,
+        <p style={{ fontSize: "0.88rem", lineHeight: 1.65, margin: 0 }}>
+          IT professional with 4+ years of hands-on experience across information security,
           networking, infrastructure, and application development.
         </p>
-        <p>
-          Focused on practical security, modern web engineering, and continuous improvement through
-          automation and resilient architecture.
+        <p style={{ fontSize: "0.88rem", lineHeight: 1.65, margin: 0 }}>
+          Focused on practical security, modern web engineering, and continuous improvement
+          through automation and resilient architecture.
         </p>
-        <div className="chip-row">
-          <span className="chip">Application Development</span>
-          <span className="chip">Penetration Testing</span>
-          <span className="chip">IT Security</span>
-          <span className="chip">Networking</span>
-          <span className="chip">Cloud Networking</span>
-          <span className="chip">Database Management</span>
+        <div>
+          <p className="md3-section-label">Specialisations</p>
+          <div className="chip-row">
+            <span className="chip">Application Development</span>
+            <span className="chip">Penetration Testing</span>
+            <span className="chip">IT Security</span>
+            <span className="chip">Networking</span>
+            <span className="chip">Cloud Networking</span>
+            <span className="chip">Database Management</span>
+          </div>
         </div>
       </div>
     );
@@ -43,12 +47,19 @@ export function renderAppBody(
       <div className="timeline">
         {experience.map((item) => (
           <div key={`${item.company}-${item.role}`} className="timeline-item">
-            <div>
-              <h3>{item.role}</h3>
-              <p className="muted">
-                {item.company} | {item.period}
-              </p>
-              <p>{item.summary}</p>
+            <div className="timeline-item-inner">
+              <div className="timeline-lead" aria-hidden="true">
+                <Briefcase className="h-4 w-4" />
+              </div>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <h3>{item.role}</h3>
+                <p className="muted" style={{ marginTop: "0.2rem" }}>
+                  {item.company} · {item.period}
+                </p>
+                <p style={{ marginTop: "0.45rem", fontSize: "0.84rem", lineHeight: 1.55 }}>
+                  {item.summary}
+                </p>
+              </div>
             </div>
           </div>
         ))}
@@ -58,12 +69,17 @@ export function renderAppBody(
 
   if (appId === "skills") {
     return (
-      <div className="chip-row">
-        {skillTags.map((skill) => (
-          <span className="chip" key={skill}>
-            {skill}
-          </span>
-        ))}
+      <div className="stack">
+        <div>
+          <p className="md3-section-label">Technical Skills</p>
+          <div className="chip-row">
+            {skillTags.map((skill) => (
+              <span className="chip" key={skill}>
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -71,44 +87,91 @@ export function renderAppBody(
   if (appId === "contact") {
     return (
       <div className="stack">
-        <p>Open a channel and let&apos;s build something secure, useful, and production-ready.</p>
-        <div className="cta-row">
-          {hasLinkedIn && (
-            <a className="os-link-btn" href={site.linkedinUrl} target="_blank" rel="noreferrer">
-              <Linkedin className="h-4 w-4" />
-              LinkedIn
-            </a>
-          )}
-          {hasGitHub && (
-            <a className="os-link-btn" href={site.githubUrl} target="_blank" rel="noreferrer">
-              <Github className="h-4 w-4" />
-              GitHub
-            </a>
-          )}
+        <p style={{ fontSize: "0.88rem", lineHeight: 1.65, margin: 0 }}>
+          Open a channel and let&apos;s build something secure, useful, and production-ready.
+        </p>
+        <div>
+          <p className="md3-section-label">Connect</p>
+          <div className="cta-row">
+            {hasLinkedIn && (
+              <a className="md3-btn-filled" href={site.linkedinUrl} target="_blank" rel="noreferrer">
+                <Linkedin className="h-4 w-4" />
+                LinkedIn
+              </a>
+            )}
+            {hasGitHub && (
+              <a className="md3-btn-tonal" href={site.githubUrl} target="_blank" rel="noreferrer">
+                <Github className="h-4 w-4" />
+                GitHub
+              </a>
+            )}
+          </div>
         </div>
       </div>
     );
   }
 
   if (appId === "projects") {
-    return <iframe title="Projects App" src="/projects" className="os-app-frame" />;
+    return <ProjectsApp />;
   }
 
   if (appId === "handbook") {
     return (
       <div className="stack handbook">
-        <h3>Attack Handbook (Practice Notes)</h3>
-        <p className="muted">Defensive and legal practice only. Use these notes for CTF, labs, and authorized testing.</p>
-        <h4>1. Recon Checklist</h4>
-        <p>Inventory surface: hosts, ports, subdomains, exposed files, outdated services, auth flows.</p>
-        <h4>2. Web App Testing</h4>
-        <p>Check input validation, authz/authn flaws, IDOR, insecure file upload, SSRF, XSS, SQLi patterns.</p>
-        <h4>3. Credential & Session Risks</h4>
-        <p>Review password policy, reset flow abuse, token lifetime, cookie flags, session fixation paths.</p>
-        <h4>4. Misconfiguration</h4>
-        <p>Look for debug endpoints, verbose errors, default credentials, weak CORS, open buckets, leaked env files.</p>
-        <h4>5. Evidence & Reporting</h4>
-        <p>Capture reproducible PoC steps, impact, affected scope, and mitigation with priority and owner.</p>
+        <div>
+          <h3 style={{ margin: 0, fontSize: "0.95rem", fontWeight: 600 }}>Attack Handbook</h3>
+          <p className="muted" style={{ marginTop: "0.25rem" }}>Defensive and legal practice only — CTF, labs, and authorized testing.</p>
+        </div>
+        <div className="timeline-item">
+          <div className="timeline-item-inner" style={{ padding: "0.7rem 0.85rem" }}>
+            <div style={{ minWidth: 0 }}>
+              <h4 style={{ margin: 0, fontSize: "0.84rem", fontWeight: 600 }}>1. Recon Checklist</h4>
+              <p style={{ margin: "0.2rem 0 0", fontSize: "0.82rem", lineHeight: 1.55 }}>
+                Inventory surface: hosts, ports, subdomains, exposed files, outdated services, auth flows.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="timeline-item">
+          <div className="timeline-item-inner" style={{ padding: "0.7rem 0.85rem" }}>
+            <div style={{ minWidth: 0 }}>
+              <h4 style={{ margin: 0, fontSize: "0.84rem", fontWeight: 600 }}>2. Web App Testing</h4>
+              <p style={{ margin: "0.2rem 0 0", fontSize: "0.82rem", lineHeight: 1.55 }}>
+                Check input validation, authz/authn flaws, IDOR, insecure file upload, SSRF, XSS, SQLi patterns.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="timeline-item">
+          <div className="timeline-item-inner" style={{ padding: "0.7rem 0.85rem" }}>
+            <div style={{ minWidth: 0 }}>
+              <h4 style={{ margin: 0, fontSize: "0.84rem", fontWeight: 600 }}>3. Credential &amp; Session Risks</h4>
+              <p style={{ margin: "0.2rem 0 0", fontSize: "0.82rem", lineHeight: 1.55 }}>
+                Review password policy, reset flow abuse, token lifetime, cookie flags, session fixation paths.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="timeline-item">
+          <div className="timeline-item-inner" style={{ padding: "0.7rem 0.85rem" }}>
+            <div style={{ minWidth: 0 }}>
+              <h4 style={{ margin: 0, fontSize: "0.84rem", fontWeight: 600 }}>4. Misconfiguration</h4>
+              <p style={{ margin: "0.2rem 0 0", fontSize: "0.82rem", lineHeight: 1.55 }}>
+                Look for debug endpoints, verbose errors, default credentials, weak CORS, open buckets, leaked env files.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="timeline-item">
+          <div className="timeline-item-inner" style={{ padding: "0.7rem 0.85rem" }}>
+            <div style={{ minWidth: 0 }}>
+              <h4 style={{ margin: 0, fontSize: "0.84rem", fontWeight: 600 }}>5. Evidence &amp; Reporting</h4>
+              <p style={{ margin: "0.2rem 0 0", fontSize: "0.82rem", lineHeight: 1.55 }}>
+                Capture reproducible PoC steps, impact, affected scope, and mitigation with priority and owner.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -120,82 +183,65 @@ export function renderAppBody(
 
     return (
       <div className="stack">
-        <h3 style={{ margin: 0 }}>UI Appearance</h3>
-        <p className="muted">Theme controls dark mode and wallpaper. System follows your device setting.</p>
-        <div className="cta-row">
-          <button
-            type="button"
-            className="os-link-btn"
-            aria-pressed={themeMode === "system"}
-            onClick={() => options?.onSetThemeMode?.("system")}
-            style={
-              themeMode === "system"
-                ? { borderColor: "rgba(30, 64, 175, 0.52)", background: "rgba(191, 219, 254, 0.36)" }
-                : undefined
-            }
-          >
-            System
-          </button>
-          <button
-            type="button"
-            className="os-link-btn"
-            aria-pressed={themeMode === "light"}
-            onClick={() => options?.onSetThemeMode?.("light")}
-            style={
-              themeMode === "light"
-                ? { borderColor: "rgba(30, 64, 175, 0.52)", background: "rgba(191, 219, 254, 0.36)" }
-                : undefined
-            }
-          >
-            Light Theme
-          </button>
-          <button
-            type="button"
-            className="os-link-btn"
-            aria-pressed={themeMode === "dark"}
-            onClick={() => options?.onSetThemeMode?.("dark")}
-            style={
-              themeMode === "dark"
-                ? { borderColor: "rgba(30, 64, 175, 0.52)", background: "rgba(191, 219, 254, 0.36)" }
-                : undefined
-            }
-          >
-            Dark Theme
-          </button>
+        <div>
+          <p className="md3-section-label">Theme</p>
+          <p className="muted" style={{ marginBottom: "0.6rem" }}>Controls dark mode and wallpaper. System follows device setting.</p>
+          <div className="md3-seg-group">
+            <button
+              type="button"
+              className={`md3-seg-btn ${themeMode === "system" ? "active" : ""}`}
+              aria-pressed={themeMode === "system"}
+              onClick={() => options?.onSetThemeMode?.("system")}
+            >
+              System
+            </button>
+            <button
+              type="button"
+              className={`md3-seg-btn ${themeMode === "light" ? "active" : ""}`}
+              aria-pressed={themeMode === "light"}
+              onClick={() => options?.onSetThemeMode?.("light")}
+            >
+              Light
+            </button>
+            <button
+              type="button"
+              className={`md3-seg-btn ${themeMode === "dark" ? "active" : ""}`}
+              aria-pressed={themeMode === "dark"}
+              onClick={() => options?.onSetThemeMode?.("dark")}
+            >
+              Dark
+            </button>
+          </div>
         </div>
-        <p className="muted">Liquid glass controls how transparent phone/tablet glass surfaces look.</p>
-        <div className="cta-row">
-          <button
-            type="button"
-            className="os-link-btn"
-            aria-pressed={liquidGlassMode === "clear"}
-            onClick={() => options?.onSetLiquidGlassMode?.("clear")}
-            style={
-              liquidGlassMode === "clear"
-                ? { borderColor: "rgba(30, 64, 175, 0.52)", background: "rgba(191, 219, 254, 0.36)" }
-                : undefined
-            }
-          >
-            Clear Glass
-          </button>
-          <button
-            type="button"
-            className="os-link-btn"
-            aria-pressed={liquidGlassMode === "tinted"}
-            onClick={() => options?.onSetLiquidGlassMode?.("tinted")}
-            style={
-              liquidGlassMode === "tinted"
-                ? { borderColor: "rgba(30, 64, 175, 0.52)", background: "rgba(191, 219, 254, 0.36)" }
-                : undefined
-            }
-          >
-            Tinted Glass
-          </button>
+
+        <div>
+          <p className="md3-section-label">Glass Mode</p>
+          <p className="muted" style={{ marginBottom: "0.6rem" }}>Controls transparency of mobile glass surfaces.</p>
+          <div className="md3-seg-group">
+            <button
+              type="button"
+              className={`md3-seg-btn ${liquidGlassMode === "clear" ? "active" : ""}`}
+              aria-pressed={liquidGlassMode === "clear"}
+              onClick={() => options?.onSetLiquidGlassMode?.("clear")}
+            >
+              Clear
+            </button>
+            <button
+              type="button"
+              className={`md3-seg-btn ${liquidGlassMode === "tinted" ? "active" : ""}`}
+              aria-pressed={liquidGlassMode === "tinted"}
+              onClick={() => options?.onSetLiquidGlassMode?.("tinted")}
+            >
+              Tinted
+            </button>
+          </div>
         </div>
+
         <p className="muted">
-          Theme: {themeMode === "system" ? `System (${resolvedTheme === "dark" ? "Dark" : "Light"})` : themeMode === "light" ? "Light" : "Dark"}
+          Active: {themeMode === "system" ? `System (${resolvedTheme === "dark" ? "Dark" : "Light"})` : themeMode === "light" ? "Light" : "Dark"}
+          {" · "}
+          Glass: {liquidGlassMode === "clear" ? "Clear" : "Tinted"}
         </p>
-        <p className="muted">Current mode: {liquidGlassMode === "clear" ? "Clear" : "Tinted"}</p>
       </div>
     );
   }
