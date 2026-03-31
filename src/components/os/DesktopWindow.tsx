@@ -1,7 +1,7 @@
 import type React from "react";
 import { Maximize2, Minus, X } from "lucide-react";
 import { renderAppBody } from "@/components/os/AppBody";
-import type { AppConfig, AppId, LiquidGlassMode, ResizeDirection, ThemeMode, WindowState } from "@/components/os/types";
+import type { AppConfig, AppId, ResizeDirection, ThemeMode, WindowState } from "@/components/os/types";
 
 export function DesktopWindow({
   app,
@@ -17,8 +17,6 @@ export function DesktopWindow({
   onDragStart,
   onResizeStart,
   onOpenApp,
-  liquidGlassMode,
-  onSetLiquidGlassMode,
   themeMode,
   resolvedThemeMode,
   onSetThemeMode,
@@ -36,8 +34,6 @@ export function DesktopWindow({
   onDragStart: (id: AppId, event: React.PointerEvent<HTMLElement>) => void;
   onResizeStart: (id: AppId, direction: ResizeDirection, event: React.PointerEvent<HTMLElement>) => void;
   onOpenApp: (id: AppId) => void;
-  liquidGlassMode: LiquidGlassMode;
-  onSetLiquidGlassMode: (mode: LiquidGlassMode) => void;
   themeMode: ThemeMode;
   resolvedThemeMode: "light" | "dark";
   onSetThemeMode: (mode: ThemeMode) => void;
@@ -101,8 +97,6 @@ export function DesktopWindow({
 
       <div className="os-window-body">
         {renderAppBody(app.id, onOpenApp, {
-          liquidGlassMode,
-          onSetLiquidGlassMode,
           themeMode,
           resolvedThemeMode,
           onSetThemeMode,

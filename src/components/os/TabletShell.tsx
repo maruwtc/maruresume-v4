@@ -1,7 +1,7 @@
 import { ChevronLeft } from "lucide-react";
 import { apps } from "@/components/os/data";
 import { renderAppBody } from "@/components/os/AppBody";
-import type { AppId, LiquidGlassMode, ThemeMode } from "@/components/os/types";
+import type { AppId, ThemeMode } from "@/components/os/types";
 
 const appColors: Record<AppId, string> = {
   about:      "bg-blue-500",
@@ -20,8 +20,6 @@ export function TabletShell({
   onGoHome,
   dateText,
   clockText,
-  liquidGlassMode,
-  onSetLiquidGlassMode,
   themeMode,
   resolvedThemeMode,
   onSetThemeMode,
@@ -32,8 +30,6 @@ export function TabletShell({
   onGoHome: () => void;
   dateText: string;
   clockText: string;
-  liquidGlassMode: LiquidGlassMode;
-  onSetLiquidGlassMode: (mode: LiquidGlassMode) => void;
   themeMode: ThemeMode;
   resolvedThemeMode: "light" | "dark";
   onSetThemeMode: (mode: ThemeMode) => void;
@@ -42,13 +38,11 @@ export function TabletShell({
   const activeTabletApp = activeAppId ? apps.find((app) => app.id === activeAppId) : null;
   const dockAppIds: AppId[] = ["about", "experience", "skills", "contact", "projects", "settings"];
   const dockApps = dockAppIds.map((id) => apps.find((app) => app.id === id)).filter((app) => app !== undefined);
-  const clearGlass = liquidGlassMode === "clear";
   const dark = resolvedThemeMode === "dark";
 
-  // CSS glass token classes — theming handled in globals.css via body.theme-dark
-  const glassCard = clearGlass ? "ios-glass-clear" : "ios-glass";
-  const glassBar  = clearGlass ? "ios-glass-bar-clear" : "ios-glass-bar";
-  const glassDock = clearGlass ? "ios-glass-dock-clear" : "ios-glass-dock";
+  const glassCard = "ios-glass";
+  const glassBar  = "ios-glass-bar";
+  const glassDock = "ios-glass-dock";
 
   return (
     <main className="os-shell fixed inset-0 h-[100dvh] w-full overflow-hidden [overscroll-behavior-y:none]">
@@ -56,18 +50,44 @@ export function TabletShell({
 
       {/* Top status bar — glass pill */}
       <header
-        className={`fixed top-3 left-4 right-4 z-40 flex items-center justify-between rounded-xl px-3 py-1.5 text-[0.8rem] font-semibold ${glassCard} ${
-          dark ? "text-white" : "text-slate-900"
-        }`}
+        className={`fixed top-3 left-4 right-4 z-40 flex items-center rounded-xl px-3 py-1.5 ${glassCard}`}
       >
-        <span>{dateText}</span>
-        <span className="tabular-nums">{clockText}</span>
+        {/* Left: date */}
+        <span className={`text-[0.78rem] font-medium ${dark ? "text-white/60" : "text-slate-500"}`}>
+          {dateText}
+        </span>
+        {/* Centre: active app name or brand */}
+        <span className={`flex-1 text-center text-[0.82rem] font-semibold ${dark ? "text-white/85" : "text-slate-800"}`}>
+          {activeTabletApp ? activeTabletApp.title : "Chris OS"}
+        </span>
+        {/* Right: time */}
+        <span className={`text-[0.8rem] font-semibold tabular-nums ${dark ? "text-white/85" : "text-slate-800"}`}>
+          {clockText.slice(0, 5)}
+        </span>
       </header>
+
+      {/* Home greeting */}
+      {!activeTabletApp && (
+        <div className="fixed left-0 right-0 z-20 flex flex-col items-center pointer-events-none" style={{ top: 68 }}>
+          <span
+            className="text-[2.4rem] font-thin tabular-nums leading-none"
+            style={{ color: dark ? "rgba(255,255,255,0.82)" : "rgba(15,23,42,0.72)" }}
+          >
+            {clockText.slice(0, 5)}
+          </span>
+          <span
+            className="text-[0.78rem] mt-1"
+            style={{ color: dark ? "rgba(255,255,255,0.42)" : "rgba(15,23,42,0.42)" }}
+          >
+            {dateText}
+          </span>
+        </div>
+      )}
 
       {/* Home app grid */}
       {!activeTabletApp && (
         <section
-          className="grid [grid-template-columns:repeat(4,minmax(0,1fr))] gap-x-3.5 gap-y-4.5 px-5 pt-17 pb-31 [overscroll-behavior:contain]"
+          className="grid [grid-template-columns:repeat(4,minmax(0,1fr))] gap-x-3.5 gap-y-4.5 px-5 pt-44 pb-31 [overscroll-behavior:contain]"
           aria-label="Tablet home apps"
         >
           {apps.map((app) => {
@@ -122,8 +142,6 @@ export function TabletShell({
 
             <div className="overflow-auto p-4 [overscroll-behavior:contain] [-webkit-overflow-scrolling:touch]">
               {renderAppBody(activeTabletApp.id, onOpenApp, {
-                liquidGlassMode,
-                onSetLiquidGlassMode,
                 themeMode,
                 resolvedThemeMode,
                 onSetThemeMode,

@@ -5,7 +5,7 @@ import { ChevronLeft } from "lucide-react";
 import { apps } from "@/components/os/data";
 import { renderAppBody } from "@/components/os/AppBody";
 import { CalendarWidget } from "@/components/os/CalendarWidget";
-import type { AppId, LiquidGlassMode, ThemeMode } from "@/components/os/types";
+import type { AppId, ThemeMode } from "@/components/os/types";
 
 /** Per-app flat colours */
 const appColors: Record<AppId, string> = {
@@ -23,8 +23,8 @@ export function PhoneShell({
   activeAppId,
   onOpenApp,
   onGoHome,
-  liquidGlassMode,
-  onSetLiquidGlassMode,
+  dateText,
+  clockText,
   themeMode,
   resolvedThemeMode,
   onSetThemeMode,
@@ -35,8 +35,6 @@ export function PhoneShell({
   onGoHome: () => void;
   dateText: string;
   clockText: string;
-  liquidGlassMode: LiquidGlassMode;
-  onSetLiquidGlassMode: (mode: LiquidGlassMode) => void;
   themeMode: ThemeMode;
   resolvedThemeMode: "light" | "dark";
   onSetThemeMode: (mode: ThemeMode) => void;
@@ -45,7 +43,6 @@ export function PhoneShell({
   const activePhoneApp = activeAppId ? apps.find((app) => app.id === activeAppId) : null;
   const dockAppIds: AppId[] = ["about", "experience", "skills", "contact", "settings"];
   const dockApps = dockAppIds.map((id) => apps.find((app) => app.id === id)).filter((app) => app !== undefined);
-  const clearGlass = liquidGlassMode === "clear";
   const dark = resolvedThemeMode === "dark";
 
   const homeScrollRef = useRef<HTMLDivElement>(null);
@@ -75,20 +72,22 @@ export function PhoneShell({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [activeAppId, onGoHome]);
 
-  // CSS glass class tokens — all theming is in globals.css via body.theme-dark
-  const glassCard = clearGlass ? "ios-glass-clear" : "ios-glass";
-  const glassBar  = clearGlass ? "ios-glass-bar-clear" : "ios-glass-bar";
-  const glassDock = clearGlass ? "ios-glass-dock-clear" : "ios-glass-dock";
+  const glassCard = "ios-glass";
+  const glassBar  = "ios-glass-bar";
+  const glassDock = "ios-glass-dock";
 
   return (
     <main className="os-shell fixed inset-0 h-[100dvh] w-full overflow-hidden [overscroll-behavior-y:none]">
       <div className="os-wallpaper" style={{ backgroundImage: `url(${wallpaperUrl})` }} aria-hidden="true" />
 
-      {/* Top bar — floating pill, mirrors dock */}
+      {/* Top bar — floating pill with time */}
       {!activePhoneApp && (
-        <header className={`fixed top-2.5 left-1/2 -translate-x-1/2 z-40 flex items-center justify-center w-[calc(100vw-1.5rem)] max-w-[380px] h-10 rounded-[20px] ${glassDock}`}>
-          <span className={`text-[0.78rem] font-semibold tracking-[0.06em] uppercase ${dark ? "text-white/80" : "text-slate-700"}`}>
+        <header className={`fixed top-2.5 left-1/2 -translate-x-1/2 z-40 flex items-center justify-between w-[calc(100vw-1.5rem)] max-w-[380px] h-10 px-4 rounded-[20px] ${glassDock}`}>
+          <span className={`text-[0.78rem] font-semibold tracking-[0.05em] uppercase ${dark ? "text-white/70" : "text-slate-600"}`}>
             Chris OS
+          </span>
+          <span className={`text-[0.78rem] font-semibold tabular-nums ${dark ? "text-white/85" : "text-slate-800"}`}>
+            {clockText.slice(0, 5)}
           </span>
         </header>
       )}
@@ -189,8 +188,6 @@ export function PhoneShell({
 
             <div className="overflow-auto p-3.5 [overscroll-behavior:contain] [-webkit-overflow-scrolling:touch]">
               {renderAppBody(activePhoneApp.id, onOpenApp, {
-                liquidGlassMode,
-                onSetLiquidGlassMode,
                 themeMode,
                 resolvedThemeMode,
                 onSetThemeMode,

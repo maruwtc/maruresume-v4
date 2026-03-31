@@ -2,7 +2,6 @@ import type React from "react";
 
 export type AppId = "about" | "experience" | "skills" | "contact" | "projects" | "terminal" | "handbook" | "settings";
 export type ViewMode = "desktop" | "tablet" | "phone";
-export type LiquidGlassMode = "clear" | "tinted";
 export type ThemeMode = "light" | "dark" | "system";
 
 export type AppConfig = {
@@ -52,4 +51,25 @@ export type ExperienceItem = {
   company: string;
   period: string;
   summary: string;
+  techStack?: string[];
+  bullets?: string[];
+};
+
+export type SkillLevel = "expert" | "proficient" | "familiar";
+
+export type SkillEntry = {
+  name: string;
+  level: SkillLevel;
+};
+
+export type SkillCategory = {
+  label: string;
+  colorClass: string;
+  skills: SkillEntry[];
+};
+
+export type Certification = {
+  name: string;
+  issuer: string;
+  year: number;
 };

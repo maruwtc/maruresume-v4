@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ExternalLink, Github, Loader2, Star } from "lucide-react";
 import { site } from "@/lib/site";
 
@@ -41,10 +41,14 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(months / 12)}y ago`;
 }
 
+type SortMode = "recent" | "stars";
+
 export function ProjectsApp() {
   const [repos, setRepos] = useState<GitHubRepo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [langFilter, setLangFilter] = useState<string>("All");
+  const [sortMode, setSortMode] = useState<SortMode>("recent");
 
   useEffect(() => {
     if (!site.githubUsername) {
@@ -59,7 +63,7 @@ export function ProjectsApp() {
         return r.json() as Promise<GitHubRepo[]>;
       })
       .then((data) => {
-        setRepos(data.filter((r) => !r.fork).slice(0, 20));
+        setRepos(data.filter((r) => !r.fork).slice(0, 40));
         setLoading(false);
       })
       .catch(() => {
@@ -67,6 +71,20 @@ export function ProjectsApp() {
         setLoading(false);
       });
   }, []);
+
+  const languages = useMemo(() => {
+    const langs = new Set<string>();
+    repos.forEach((r) => { if (r.language) langs.add(r.language); });
+    return ["All", ...Array.from(langs).sort()];
+  }, [repos]);
+
+  const filtered = useMemo(() => {
+    let list = langFilter === "All" ? repos : repos.filter((r) => r.language === langFilter);
+    if (sortMode === "stars") {
+      list = [...list].sort((a, b) => b.stargazers_count - a.stargazers_count);
+    }
+    return list.slice(0, 20);
+  }, [repos, langFilter, sortMode]);
 
   if (loading) {
     return (
@@ -86,73 +104,112 @@ export function ProjectsApp() {
   }
 
   return (
-    <div className="timeline">
-      {repos.map((repo) => {
-        const langClass = repo.language ? (langColors[repo.language] ?? "bg-slate-100 text-slate-700") : null;
+    <div className="stack">
+      {/* Controls */}
+      <div className="projects-controls">
+        {/* Sort toggle */}
+        <div className="md3-seg-group" style={{ width: "fit-content" }}>
+          <button
+            type="button"
+            className={`md3-seg-btn ${sortMode === "recent" ? "active" : ""}`}
+            onClick={() => setSortMode("recent")}
+          >
+            Recent
+          </button>
+          <button
+            type="button"
+            className={`md3-seg-btn ${sortMode === "stars" ? "active" : ""}`}
+            onClick={() => setSortMode("stars")}
+          >
+            Stars
+          </button>
+        </div>
 
-        return (
-          <div key={repo.id} className="timeline-item">
-            <div className="timeline-item-inner">
-              <div style={{ minWidth: 0, flex: 1 }}>
+        {/* Language filter */}
+        {languages.length > 2 && (
+          <div className="lang-filter-row">
+            {languages.map((lang) => (
+              <button
+                key={lang}
+                type="button"
+                className={`chip lang-filter-chip ${langFilter === lang ? "active" : ""}`}
+                onClick={() => setLangFilter(lang)}
+              >
+                {lang}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
-                {/* Title row */}
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
-                  <h3 style={{ margin: 0 }}>{repo.name}</h3>
-                  {repo.stargazers_count > 0 && (
-                    <span className="muted" style={{ display: "inline-flex", alignItems: "center", gap: "0.2rem", fontSize: "0.74rem" }}>
-                      <Star style={{ width: 11, height: 11 }} />
-                      {repo.stargazers_count}
-                    </span>
+      {/* Repo list */}
+      <div className="timeline">
+        {filtered.map((repo) => {
+          const langClass = repo.language ? (langColors[repo.language] ?? "bg-slate-100 text-slate-700") : null;
+
+          return (
+            <div key={repo.id} className="timeline-item">
+              <div className="timeline-item-inner">
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  {/* Title row */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+                    <h3 style={{ margin: 0 }}>{repo.name}</h3>
+                    {repo.stargazers_count > 0 && (
+                      <span className="muted" style={{ display: "inline-flex", alignItems: "center", gap: "0.2rem", fontSize: "0.74rem" }}>
+                        <Star style={{ width: 11, height: 11 }} />
+                        {repo.stargazers_count}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Description */}
+                  {repo.description && (
+                    <p style={{ marginTop: "0.3rem", fontSize: "0.82rem", lineHeight: 1.5 }}>
+                      {repo.description}
+                    </p>
                   )}
-                </div>
 
-                {/* Description */}
-                {repo.description && (
-                  <p style={{ marginTop: "0.3rem", fontSize: "0.82rem", lineHeight: 1.5 }}>
-                    {repo.description}
-                  </p>
-                )}
+                  {/* Meta row */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", marginTop: "0.55rem", flexWrap: "wrap" }}>
+                    {langClass && (
+                      <span className={`chip ${langClass}`} style={{ border: "none", borderRadius: 6 }}>
+                        {repo.language}
+                      </span>
+                    )}
+                    <span className="muted">{timeAgo(repo.updated_at)}</span>
+                  </div>
 
-                {/* Meta row */}
-                <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", marginTop: "0.55rem", flexWrap: "wrap" }}>
-                  {langClass && (
-                    <span className={`chip ${langClass}`} style={{ border: "none", borderRadius: 6 }}>
-                      {repo.language}
-                    </span>
-                  )}
-                  <span className="muted">{timeAgo(repo.updated_at)}</span>
-                </div>
-
-                {/* Action buttons */}
-                <div className="cta-row" style={{ marginTop: "0.65rem" }}>
-                  <a
-                    className="md3-btn-tonal"
-                    href={repo.html_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ fontSize: "0.76rem", padding: "0.35rem 0.7rem" }}
-                  >
-                    <Github className="h-3.5 w-3.5" />
-                    Code
-                  </a>
-                  {repo.homepage && (
+                  {/* Action buttons */}
+                  <div className="cta-row" style={{ marginTop: "0.65rem" }}>
                     <a
-                      className="md3-btn-filled"
-                      href={repo.homepage}
+                      className="md3-btn-tonal"
+                      href={repo.html_url}
                       target="_blank"
                       rel="noreferrer"
                       style={{ fontSize: "0.76rem", padding: "0.35rem 0.7rem" }}
                     >
-                      <ExternalLink className="h-3.5 w-3.5" />
-                      Demo
+                      <Github className="h-3.5 w-3.5" />
+                      Code
                     </a>
-                  )}
+                    {repo.homepage && (
+                      <a
+                        className="md3-btn-filled"
+                        href={repo.homepage}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ fontSize: "0.76rem", padding: "0.35rem 0.7rem" }}
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                        Demo
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }

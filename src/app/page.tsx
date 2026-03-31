@@ -14,7 +14,7 @@ import {
   MIN_WINDOW_HEIGHT,
   MIN_WINDOW_WIDTH,
 } from "@/components/os/data";
-import type { AppId, InteractionState, LiquidGlassMode, ResizeDirection, ThemeMode, ViewMode, WindowState } from "@/components/os/types";
+import type { AppId, InteractionState, ResizeDirection, ThemeMode, ViewMode, WindowState } from "@/components/os/types";
 
 export default function Home() {
   const workspaceRef = useRef<HTMLElement>(null);
@@ -48,7 +48,6 @@ export default function Home() {
   } | null>(null);
   const [dragging, setDragging] = useState(false);
   const [now, setNow] = useState<Date | null>(null);
-  const [liquidGlassMode, setLiquidGlassMode] = useState<LiquidGlassMode>("tinted");
   const [themeMode, setThemeMode] = useState<ThemeMode>("system");
   const [systemThemeMode, setSystemThemeMode] = useState<"light" | "dark">("light");
 
@@ -143,6 +142,11 @@ export default function Home() {
   const dateText = useMemo(() => {
     if (!now) return "--";
     return now.toLocaleDateString([], { weekday: "long", year: "numeric", month: "short", day: "numeric" });
+  }, [now]);
+
+  const shortDateText = useMemo(() => {
+    if (!now) return "--";
+    return now.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
   }, [now]);
 
   const hourAngle = useMemo(() => {
@@ -541,8 +545,6 @@ export default function Home() {
         onGoHome={() => setPhoneActiveApp(null)}
         dateText={dateText}
         clockText={clockText}
-        liquidGlassMode={liquidGlassMode}
-        onSetLiquidGlassMode={setLiquidGlassMode}
         themeMode={themeMode}
         resolvedThemeMode={resolvedThemeMode}
         onSetThemeMode={setThemeMode}
@@ -559,8 +561,6 @@ export default function Home() {
         onGoHome={() => setTabletActiveApp(null)}
         dateText={dateText}
         clockText={clockText}
-        liquidGlassMode={liquidGlassMode}
-        onSetLiquidGlassMode={setLiquidGlassMode}
         themeMode={themeMode}
         resolvedThemeMode={resolvedThemeMode}
         onSetThemeMode={setThemeMode}
@@ -579,6 +579,7 @@ export default function Home() {
       <section className="os-desktop-icons" aria-label="Desktop icons">
         {apps.map((app) => {
           const Icon = app.icon;
+          const isRunning = openWindows.includes(app.id);
           return (
             <button
               key={app.id}
@@ -601,6 +602,7 @@ export default function Home() {
                 <Icon className="h-5 w-5" />
               </span>
               <span>{app.title}</span>
+              {isRunning && <span className="os-icon-running" aria-hidden="true" />}
             </button>
           );
         })}
@@ -636,17 +638,28 @@ export default function Home() {
         </section>
 
         <section className="os-widget">
-          <h2>System</h2>
-          <p>Profile: ChrisOS Desktop</p>
-          <p>Mode: Security + Engineering</p>
-          <p>Shell: `zsh` compatible</p>
+          <h2>Profile</h2>
+          <div className="widget-profile-row">
+            <div className="widget-avatar">CW</div>
+            <div>
+              <p className="widget-profile-name">Chris Wong</p>
+              <p className="widget-profile-role">IT Security Professional</p>
+            </div>
+          </div>
+          <div className="widget-availability">
+            <span className="availability-dot" />
+            Available · HK · GMT+8
+          </div>
         </section>
 
         <section className="os-widget">
-          <h2>Quick Tips</h2>
-          <p>Use terminal `help` to list commands.</p>
-          <p>Drag window title bars to move windows.</p>
-          <p>Drag window borders/corners to resize.</p>
+          <h2>Shortcuts</h2>
+          <div className="widget-shortcuts">
+            <div className="shortcut-row"><kbd>Esc</kbd><span>Close window</span></div>
+            <div className="shortcut-row"><kbd>Dbl-click</kbd><span>Open app</span></div>
+            <div className="shortcut-row"><kbd>Drag title</kbd><span>Move window</span></div>
+            <div className="shortcut-row"><kbd>Drag border</kbd><span>Resize</span></div>
+          </div>
         </section>
       </aside>
 
@@ -674,8 +687,6 @@ export default function Home() {
               onDragStart={startDrag}
               onResizeStart={startResize}
               onOpenApp={openApp}
-              liquidGlassMode={liquidGlassMode}
-              onSetLiquidGlassMode={setLiquidGlassMode}
               themeMode={themeMode}
               resolvedThemeMode={resolvedThemeMode}
               onSetThemeMode={setThemeMode}
@@ -692,10 +703,12 @@ export default function Home() {
           </h2>
           {apps.map((app) => {
             const Icon = app.icon;
+            const isRunning = openWindows.includes(app.id);
             return (
               <button key={app.id} type="button" className="os-start-item" onClick={() => openApp(app.id)}>
                 <Icon className="h-4 w-4" />
-                {app.title}
+                <span style={{ flex: 1 }}>{app.title}</span>
+                {isRunning && <span className="os-start-running-dot" aria-label="running" />}
               </button>
             );
           })}
@@ -728,7 +741,10 @@ export default function Home() {
           })}
         </div>
 
-        <div className="os-clock">{clockText}</div>
+        <div className="os-clock">
+          <span>{clockText}</span>
+          <span className="os-clock-date">{shortDateText}</span>
+        </div>
       </nav>
     </main>
   );

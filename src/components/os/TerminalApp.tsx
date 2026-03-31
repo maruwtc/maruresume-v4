@@ -165,6 +165,8 @@ export function TerminalApp({ onOpenApp }: { onOpenApp: (id: AppId) => void }) {
   const [cwd, setCwd] = useState("/home/chris");
   const [activeChallengeId, setActiveChallengeId] = useState<string | null>(null);
   const [solvedChallenges, setSolvedChallenges] = useState<string[]>([]);
+  const [cmdHistory, setCmdHistory] = useState<string[]>([]);
+  const historyIdxRef = useRef(-1);
   const viewportRef = useRef<HTMLDivElement>(null);
   const nextLineIdRef = useRef(3);
 
@@ -258,6 +260,9 @@ export function TerminalApp({ onOpenApp }: { onOpenApp: (id: AppId) => void }) {
     const trimmed = rawInput.trim();
     if (!trimmed) return;
 
+    setCmdHistory((prev) => [trimmed, ...prev]);
+    historyIdxRef.current = -1;
+
     pushLine("input", `${cwd}\n> ${trimmed}`);
 
     const [cmdRaw, ...args] = trimmed.split(/\s+/);
@@ -267,9 +272,19 @@ export function TerminalApp({ onOpenApp }: { onOpenApp: (id: AppId) => void }) {
     if (cmd === "help") {
       pushLine(
         "output",
-        "Available: help, whoami, uname, pwd, ls, cd, cat, grep, strings, submit, ctf, open <app>, skills, experience, contact, date, echo <text>, clear"
+        "Available: help, whoami, uname, pwd, ls, cd, cat, grep, strings, submit, ctf, open <app>, skills, experience, contact, date, echo <text>, history, clear"
       );
       pushLine("output", "For CTF simulation: ctf list -> ctf start <id> -> find flag -> submit CTF{...}");
+      pushLine("output", "Tip: use ↑/↓ arrows to navigate command history.");
+      return;
+    }
+
+    if (cmd === "history") {
+      if (!cmdHistory.length) {
+        pushLine("output", "(no history)");
+        return;
+      }
+      [...cmdHistory].reverse().forEach((entry, i) => pushLine("output", `  ${i + 1}  ${entry}`));
       return;
     }
 
@@ -483,6 +498,19 @@ export function TerminalApp({ onOpenApp }: { onOpenApp: (id: AppId) => void }) {
             className="terminal-input"
             value={input}
             onChange={(event) => setInput(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "ArrowUp") {
+                event.preventDefault();
+                const nextIdx = Math.min(historyIdxRef.current + 1, cmdHistory.length - 1);
+                historyIdxRef.current = nextIdx;
+                setInput(cmdHistory[nextIdx] ?? "");
+              } else if (event.key === "ArrowDown") {
+                event.preventDefault();
+                const nextIdx = historyIdxRef.current - 1;
+                historyIdxRef.current = nextIdx;
+                setInput(nextIdx < 0 ? "" : (cmdHistory[nextIdx] ?? ""));
+              }
+            }}
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="none"
