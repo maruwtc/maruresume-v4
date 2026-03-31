@@ -62,43 +62,64 @@ export const apps: AppConfig[] = [
 
 export const experience: ExperienceItem[] = [
   {
-    role: "IT Security Operations Analyst",
-    company: "iFAST Hong Kong Holdings Limited",
-    period: "Sep 2023 - Present",
+    role: "Senior IT Security Operation Analyst",
+    company: "iFAST Holdings",
+    period: "Mar 2026 - Present",
     summary:
-      "Led blue-team controls, red-team testing, audit support, and automation-driven operational hardening.",
+      "Led IT security audits across systems and applications for HKMA/TRM compliance, performed risk assessments and gap analyses, and conducted PoC evaluations on AI-driven Detection & Response (AIDR) and AI Security Posture Management (AISPM) solutions.",
+  },
+  {
+    role: "IT Security Operation Analyst",
+    company: "iFAST Holdings",
+    period: "Sep 2023 - Feb 2026",
+    summary:
+      "Executed Blue Team operations across EDR, SIEM, and DLP platforms; performed Red Team penetration tests and vulnerability management; investigated SOC alerts and coordinated incident remediation.",
   },
   {
     role: "System Engineer",
     company: "NEC Hong Kong Limited",
     period: "Mar 2022 - Jul 2023",
     summary:
-      "Delivered SD-WAN and IPsec projects, maintained core network infrastructure, and supported security operations.",
+      "Managed SD-WAN and site-to-site IPsec VPN implementations, maintained network firewalls, routers, and switches, and assisted in IT security auditing.",
   },
   {
     role: "IT Support Officer",
     company: "TAS Services Limited",
     period: "Dec 2020 - Jan 2022",
-    summary: "Handled daily enterprise IT support and service reliability activities.",
+    summary:
+      "Managed NGFW, infrastructure, and network operations; supported daily office IT operations and led Windows 7 to Windows 10 migration for HKSAR Home Affairs Department.",
   },
   {
     role: "Engineer",
     company: "HKT",
     period: "Sep 2019 - May 2020",
-    summary: "Supported implementation and maintenance work across IT environments.",
+    summary: "Supported implementation and maintenance of IT infrastructure and network environments.",
   },
 ];
 
 export const skillTags = [
-  "TypeScript",
-  "React",
-  "Node.js",
-  "Golang",
-  "Python",
   "Penetration Testing",
-  "Network Security",
-  "Vulnerability Assessment",
-  "Information Security",
+  "OWASP WSTG",
+  "WAF",
+  "DLP",
+  "EDR",
+  "SIEM",
+  "TypeScript",
+  "Go",
+  "Python",
+  "Java",
+  "Next.js",
+  "Node.js",
+  "Gin",
+  "Flask",
+  "React Native",
+  "LAN/WAN",
+  "TCP/IP",
+  "VPN",
+  "NGFW",
+  "Cisco Routers & Switches",
+  "Cloud Networking",
+  "Cloud Security",
 ];
 
 export const INITIAL_OPEN: AppId[] = ["terminal"];

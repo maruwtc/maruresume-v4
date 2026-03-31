@@ -20,22 +20,24 @@ export function renderAppBody(
     return (
       <div className="stack">
         <p style={{ fontSize: "0.88rem", lineHeight: 1.65, margin: 0 }}>
-          IT professional with 4+ years of hands-on experience across information security,
-          networking, infrastructure, and application development.
+          Innovative IT professional with 6+ years of hands-on experience in the dynamic technology
+          landscape, specializing in information security, networking, infrastructure, and application
+          development.
         </p>
         <p style={{ fontSize: "0.88rem", lineHeight: 1.65, margin: 0 }}>
-          Focused on practical security, modern web engineering, and continuous improvement
-          through automation and resilient architecture.
+          I stay current on emerging trends to proactively tackle challenges and implement
+          cutting-edge solutions. Committed to technological excellence, I consistently deliver
+          valuable contributions to every team and project.
         </p>
         <div>
           <p className="md3-section-label">Specialisations</p>
           <div className="chip-row">
-            <span className="chip">Application Development</span>
+            <span className="chip">Information Security</span>
             <span className="chip">Penetration Testing</span>
-            <span className="chip">IT Security</span>
+            <span className="chip">Blue / Red Team Ops</span>
             <span className="chip">Networking</span>
-            <span className="chip">Cloud Networking</span>
-            <span className="chip">Database Management</span>
+            <span className="chip">Cloud Security</span>
+            <span className="chip">Application Development</span>
           </div>
         </div>
       </div>
@@ -44,22 +46,23 @@ export function renderAppBody(
 
   if (appId === "experience") {
     return (
-      <div className="timeline">
-        {experience.map((item) => (
-          <div key={`${item.company}-${item.role}`} className="timeline-item">
-            <div className="timeline-item-inner">
-              <div className="timeline-lead" aria-hidden="true">
-                <Briefcase className="h-4 w-4" />
+      <div className="exp-timeline">
+        {experience.map((item, idx) => (
+          <div key={`${item.company}-${item.role}`} className="exp-entry">
+            {/* Vertical line + dot */}
+            <div className="exp-spine" aria-hidden="true">
+              <div className="exp-dot">
+                <Briefcase className="h-3 w-3" />
               </div>
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <h3>{item.role}</h3>
-                <p className="muted" style={{ marginTop: "0.2rem" }}>
-                  {item.company} · {item.period}
-                </p>
-                <p style={{ marginTop: "0.45rem", fontSize: "0.84rem", lineHeight: 1.55 }}>
-                  {item.summary}
-                </p>
-              </div>
+              {idx < experience.length - 1 && <div className="exp-line" />}
+            </div>
+
+            {/* Content */}
+            <div className="exp-body">
+              <span className="exp-period">{item.period}</span>
+              <h3 className="exp-role">{item.role}</h3>
+              <span className="exp-company">{item.company}</span>
+              <p className="exp-summary">{item.summary}</p>
             </div>
           </div>
         ))}

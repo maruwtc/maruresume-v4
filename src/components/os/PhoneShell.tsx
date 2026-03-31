@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { apps } from "@/components/os/data";
 import { renderAppBody } from "@/components/os/AppBody";
+import { CalendarWidget } from "@/components/os/CalendarWidget";
 import type { AppId, LiquidGlassMode, ThemeMode } from "@/components/os/types";
 
 /** Per-app flat colours */
@@ -47,6 +48,24 @@ export function PhoneShell({
   const clearGlass = liquidGlassMode === "clear";
   const dark = resolvedThemeMode === "dark";
 
+  const homeScrollRef = useRef<HTMLDivElement>(null);
+  const [homePage, setHomePage] = useState(1);
+
+  // Auto-scroll to app grid (page 1) when returning home
+  useEffect(() => {
+    if (!activePhoneApp && homeScrollRef.current) {
+      homeScrollRef.current.scrollTo({ left: homeScrollRef.current.offsetWidth, behavior: "instant" });
+      setHomePage(1);
+    }
+  }, [activePhoneApp]);
+
+  const handleHomeScroll = () => {
+    const el = homeScrollRef.current;
+    if (!el) return;
+    const page = Math.round(el.scrollLeft / el.offsetWidth);
+    setHomePage(page);
+  };
+
   // Keyboard: Escape = go home
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -74,34 +93,68 @@ export function PhoneShell({
         </header>
       )}
 
-      {/* Home screen app grid */}
+      {/* Home — horizontal scroll: [calendar | app grid] */}
       {!activePhoneApp && (
-        <section
-          className="grid [grid-template-columns:repeat(4,minmax(0,1fr))] gap-x-2 gap-y-5 px-4 pt-16 pb-32 overflow-y-auto [overscroll-behavior:contain]"
-          aria-label="Phone home apps"
+        <div
+          ref={homeScrollRef}
+          className="fixed left-0 right-0 flex overflow-x-scroll overflow-y-hidden [scroll-snap-type:x_mandatory] [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          style={{ top: 54, bottom: "calc(112px + env(safe-area-inset-bottom))" }}
+          onScroll={handleHomeScroll}
         >
-          {apps.map((app) => {
-            const Icon = app.icon;
-            const color = appColors[app.id] ?? "bg-slate-400";
-            return (
-              <button
-                key={`phone-home-${app.id}`}
-                type="button"
-                className={`grid justify-items-center gap-1.5 rounded-xl border border-transparent bg-transparent p-1 text-center text-[0.68rem] font-medium transition-transform duration-150 active:scale-90 ${
-                  dark
-                    ? "text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.6)]"
-                    : "text-slate-900 [text-shadow:0_1px_1.5px_rgba(255,255,255,0.65)]"
-                }`}
-                onClick={() => onOpenApp(app.id)}
-              >
-                <span className={`inline-flex h-11 w-11 items-center justify-center rounded-[13px] ${color}`}>
-                  <Icon className="h-5 w-5 text-white" />
-                </span>
-                <span className="leading-tight">{app.title}</span>
-              </button>
-            );
-          })}
-        </section>
+          {/* Page 0: Calendar */}
+          <div className="min-w-full h-full [scroll-snap-align:start] flex flex-col px-4 py-6">
+            <CalendarWidget dark={dark} glassCard={glassCard} />
+          </div>
+
+          {/* Page 1: App grid */}
+          <div className="min-w-full h-full [scroll-snap-align:start] overflow-y-auto [overscroll-behavior:contain]">
+            <section
+              className="grid [grid-template-columns:repeat(4,minmax(0,1fr))] gap-x-2 gap-y-5 px-4 pt-4 pb-4"
+              aria-label="Phone home apps"
+            >
+              {apps.map((app) => {
+                const Icon = app.icon;
+                const color = appColors[app.id] ?? "bg-slate-400";
+                return (
+                  <button
+                    key={`phone-home-${app.id}`}
+                    type="button"
+                    className={`grid justify-items-center gap-1.5 rounded-xl border border-transparent bg-transparent p-1 text-center text-[0.68rem] font-medium transition-transform duration-150 active:scale-90 ${
+                      dark
+                        ? "text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.6)]"
+                        : "text-slate-900 [text-shadow:0_1px_1.5px_rgba(255,255,255,0.65)]"
+                    }`}
+                    onClick={() => onOpenApp(app.id)}
+                  >
+                    <span className={`inline-flex h-11 w-11 items-center justify-center rounded-[13px] ${color}`}>
+                      <Icon className="h-5 w-5 text-white" />
+                    </span>
+                    <span className="leading-tight">{app.title}</span>
+                  </button>
+                );
+              })}
+            </section>
+          </div>
+        </div>
+      )}
+
+      {/* Page dots */}
+      {!activePhoneApp && (
+        <div
+          className="fixed left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5"
+          style={{ bottom: "calc(88px + env(safe-area-inset-bottom))" }}
+        >
+          {[0, 1].map((i) => (
+            <span
+              key={i}
+              className={`block rounded-full transition-all duration-200 ${
+                homePage === i
+                  ? `w-4 h-1.5 ${dark ? "bg-white/90" : "bg-slate-800/70"}`
+                  : `w-1.5 h-1.5 ${dark ? "bg-white/35" : "bg-slate-800/30"}`
+              }`}
+            />
+          ))}
+        </div>
       )}
 
       {/* Active app view */}
