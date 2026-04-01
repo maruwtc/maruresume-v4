@@ -23,7 +23,6 @@ export function PhoneShell({
   activeAppId,
   onOpenApp,
   onGoHome,
-  dateText,
   clockText,
   themeMode,
   resolvedThemeMode,
